@@ -7,10 +7,11 @@ import { faGoogle, faFacebookF } from "@fortawesome/free-brands-svg-icons";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 import blurImage from "../../Images/blur.png";
 import authIcon from "../../Images/authIcon.png";
+import axios from "axios";
 import "./Auth.css";
 
 function Auth() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -18,55 +19,55 @@ function Auth() {
     e.preventDefault();
 
     // Validation
-    if (!username || !password) {
+    if (!email || !password) {
       console.error("Username or password is missing.");
       return;
     }
 
-    let hashedPassword;
-    try {
-      hashedPassword = await hashPassword(password);
-    } catch (err) {
-      console.error("Error hashing the password:", err);
-      return;
-    }
+    // let hashedPassword;
+    // try {
+    //   hashedPassword = await hashPassword(password);
+    // } catch (err) {
+    //   console.error("Error hashing the password:", err);
+    //   return;
+    // }
 
     const data = {
-      username: username,
-      password: hashedPassword,
+      email: email,
+      password: password,
     };
 
-    // axios
-    //     .post(
-    //         `${process.env.REACT_APP_BACK_END_URL}/api/users/dashboard/auth`,
-    //         data,
-    //         { withCredentials: true }
-    //     )
-    //     .then((res) => {
-    //         console.log(res.data);
-    //         navigate("/Dashboard");
-    //     })
-    //     .catch((err) => {
-    //         console.error("Error during authentication:", err);
-    //     });
+    axios
+        .post(
+            `${process.env.REACT_APP_BACK_END_URL}/api/users/dashboardAuth`,
+            data,
+            { withCredentials: true }
+        )
+        .then((res) => {
+            console.log(res.data);
+            navigate("/Dashboard");
+        })
+        .catch((err) => {
+            console.error("Error during authentication:", err);
+        });
   };
 
-  async function hashPassword(password) {
-    // Convert password to ArrayBuffer
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
+  // async function hashPassword(password) {
+  //   // Convert password to ArrayBuffer
+  //   const encoder = new TextEncoder();
+  //   const data = encoder.encode(password);
 
-    // Hash the password
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  //   // Hash the password
+  //   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
-    // Convert the hash to a hex string
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+  //   // Convert the hash to a hex string
+  //   const hashArray = Array.from(new Uint8Array(hashBuffer));
+  //   const hashHex = hashArray
+  //     .map((b) => b.toString(16).padStart(2, "0"))
+  //     .join("");
 
-    return hashHex;
-  }
+  //   return hashHex;
+  // }
 
   return (
     <div
@@ -88,10 +89,10 @@ function Auth() {
                         className="form-control-icon"
                       />
                       <input
-                        type="text"
+                        type="email"
                         className="form-control"
-                        placeholder="Username"
-                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Email"
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div className="form-group mb-3">
@@ -109,7 +110,7 @@ function Auth() {
                     <div className="form-group mb-3">
                       <button className="btn next-button">NEXT</button>
                     </div>
-                    <div class="login-divider">
+                    <div className="login-divider">
                       <span>
                         <b>Login</b> with Others
                       </span>
